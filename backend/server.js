@@ -1,3 +1,7 @@
+const campaignRoutes = require(
+  "./routes/campaignRoutes"
+);
+
 require("dotenv").config();
 
 const express = require("express");
@@ -19,6 +23,11 @@ app.use(express.json());
 // Routes
 app.use("/api/customers", customerRoutes);
 app.use("/api/orders", orderRoutes);
+
+app.use(
+  "/api/campaigns",
+  campaignRoutes
+);
 
 
 // Health Check Route
