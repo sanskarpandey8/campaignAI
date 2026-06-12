@@ -3,6 +3,9 @@ const Customer = require("../models/Customer");
 const CommunicationLog = require(
   "../models/CommunicationLog"
 );
+const channelService = require(
+  "../services/channelService"
+);
 
 const campaignController = {
   create: async (request, response) => {
@@ -17,44 +20,45 @@ const campaignController = {
       // Dynamic audience segmentation
       const query = {};
 
-if (rules.totalSpent) {
-  query.totalSpent = {
-    $gte: rules.totalSpent,
-  };
-}
+      if (rules.totalSpent) {
+        query.totalSpent = {
+          $gte: rules.totalSpent,
+        };
+      }
 
-if (rules.totalOrders) {
-  query.totalOrders = {
-    $gte: rules.totalOrders,
-  };
-}
+      if (rules.totalOrders) {
+        query.totalOrders = {
+          $gte: rules.totalOrders,
+        };
+      }
 
-if (rules.city) {
-  query.city = rules.city;
-}
+      if (rules.city) {
+        query.city = rules.city;
+      }
 
-if (rules.preferredChannel) {
-  query.preferredChannel =
-    rules.preferredChannel;
-}
+      if (rules.preferredChannel) {
+        query.preferredChannel =
+          rules.preferredChannel;
+      }
 
-if (rules.tags) {
-  query.tags = {
-    $in: rules.tags,
-  };
-}
+      if (rules.tags) {
+        query.tags = {
+          $in: rules.tags,
+        };
+      }
 
-if (rules.lastOrderDays) {
-  const date = new Date();
+      if (rules.lastOrderDays) {
+        const date = new Date();
 
-  date.setDate(
-    date.getDate() - rules.lastOrderDays
-  );
+        date.setDate(
+          date.getDate() -
+            rules.lastOrderDays
+        );
 
-  query.lastOrderDate = {
-    $gte: date,
-  };
-}
+        query.lastOrderDate = {
+          $gte: date,
+        };
+      }
 
       const customers =
         await Customer.find(query);
@@ -66,10 +70,10 @@ if (rules.lastOrderDays) {
           rules,
           audienceSize: customers.length,
           messageTemplate,
-          status: "COMPLETED",
+          status: "PROCESSING",
         });
 
-      // Simulate sending campaign
+      // Send campaign to all matching customers
       for (const customer of customers) {
         const personalizedMessage =
           messageTemplate.replace(
@@ -77,40 +81,64 @@ if (rules.lastOrderDays) {
             customer.name
           );
 
-        await CommunicationLog.create({
-          campaignId: campaign._id,
-          customerId: customer._id,
-          message: personalizedMessage,
-          status: "SENT",
-        });
+        const communication =
+          await CommunicationLog.create({
+            campaignId: campaign._id,
+            customerId: customer._id,
+            message:
+              personalizedMessage,
+            channel:
+              customer.preferredChannel,
+            status: "CREATED",
+          });
+
+        await channelService.sendMessage(
+          communication._id
+        );
       }
+
+      // Mark campaign as completed
+      await campaignDao.updateCampaign(
+        campaign._id,
+        {
+          status: "COMPLETED",
+        }
+      );
 
       response.status(201).json({
         message:
           "Campaign created successfully",
         campaign,
-        audienceCount: customers.length,
+        audienceCount:
+          customers.length,
       });
     } catch (error) {
       console.error(error);
 
       response.status(500).json({
-        message: "Internal server error",
+        message:
+          "Internal server error",
       });
     }
   },
 
-  getAll: async (request, response) => {
+  getAll: async (
+    request,
+    response
+  ) => {
     try {
       const campaigns =
         await campaignDao.getAllCampaigns();
 
-      response.status(200).json(campaigns);
+      response
+        .status(200)
+        .json(campaigns);
     } catch (error) {
       console.error(error);
 
       response.status(500).json({
-        message: "Internal server error",
+        message:
+          "Internal server error",
       });
     }
   },
@@ -129,18 +157,23 @@ if (rules.lastOrderDays) {
         );
 
       if (!campaign) {
-        return response.status(404).json({
-          message:
-            "Campaign not found",
-        });
+        return response
+          .status(404)
+          .json({
+            message:
+              "Campaign not found",
+          });
       }
 
-      response.status(200).json(campaign);
+      response
+        .status(200)
+        .json(campaign);
     } catch (error) {
       console.error(error);
 
       response.status(500).json({
-        message: "Internal server error",
+        message:
+          "Internal server error",
       });
     }
   },
