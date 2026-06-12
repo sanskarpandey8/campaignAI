@@ -21,12 +21,7 @@ const communicationLogSchema = new mongoose.Schema(
 
     channel: {
       type: String,
-      enum: [
-        "EMAIL",
-        "SMS",
-        "WHATSAPP",
-        "RCS",
-      ],
+      enum: ["EMAIL", "SMS", "WHATSAPP", "RCS"],
       required: true,
     },
 
@@ -43,13 +38,20 @@ const communicationLogSchema = new mongoose.Schema(
       ],
       default: "CREATED",
     },
+
+    retryCount: {
+      type: Number,
+      default: 0,
+    },
+
+    maxRetries: {
+      type: Number,
+      default: 3,
+    },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-module.exports = mongoose.model(
-  "CommunicationLog",
-  communicationLogSchema
-);
+module.exports = mongoose.model("CommunicationLog", communicationLogSchema);

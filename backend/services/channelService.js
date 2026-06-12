@@ -8,7 +8,6 @@ const channelService = {
     communicationId
   ) => {
     try {
-      // Mark communication as SENT
       await CommunicationLog.findByIdAndUpdate(
         communicationId,
         {
@@ -20,25 +19,58 @@ const channelService = {
         `Communication ${communicationId} -> SENT`
       );
 
-      // Simulate async delivery callback
       setTimeout(async () => {
-        const statuses = [
-          "DELIVERED",
-          "FAILED",
-          "OPENED",
-          "READ",
-          "CLICKED",
-        ];
+        try {
+          const communication =
+            await CommunicationLog.findById(
+              communicationId
+            );
 
-        const randomStatus =
-          statuses[
-            Math.floor(
-              Math.random() *
-                statuses.length
-            )
+          if (!communication) {
+            return;
+          }
+
+          const statuses = [
+            "DELIVERED",
+            "FAILED",
+            "OPENED",
+            "READ",
+            "CLICKED",
           ];
 
-        try {
+          let randomStatus =
+            statuses[
+              Math.floor(
+                Math.random() *
+                  statuses.length
+              )
+            ];
+        //let randomStatus = "FAILED";
+
+          // Retry if FAILED
+          if (
+            randomStatus === "FAILED" &&
+            communication.retryCount <
+              communication.maxRetries
+          ) {
+            await CommunicationLog.findByIdAndUpdate(
+              communicationId,
+              {
+                $inc: {
+                  retryCount: 1,
+                },
+              }
+            );
+
+            console.log(
+              `Retrying communication ${communicationId}`
+            );
+
+            return channelService.sendMessage(
+              communicationId
+            );
+          }
+
           await axios.post(
             "http://localhost:5000/api/receipts",
             {
@@ -52,7 +84,7 @@ const channelService = {
           );
         } catch (error) {
           console.error(
-            "Receipt callback failed:",
+            "Retry Error:",
             error.message
           );
         }
