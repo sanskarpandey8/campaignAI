@@ -177,6 +177,84 @@ const campaignController = {
       });
     }
   },
+
+  getStats: async (request, response) => {
+  try {
+    const { campaignId } = request.params;
+
+    const total =
+      await CommunicationLog.countDocuments({
+        campaignId,
+      });
+
+    const delivered =
+      await CommunicationLog.countDocuments({
+        campaignId,
+        status: "DELIVERED",
+      });
+
+    const failed =
+      await CommunicationLog.countDocuments({
+        campaignId,
+        status: "FAILED",
+      });
+
+    const opened =
+      await CommunicationLog.countDocuments({
+        campaignId,
+        status: "OPENED",
+      });
+
+    const read =
+      await CommunicationLog.countDocuments({
+        campaignId,
+        status: "READ",
+      });
+
+    const clicked =
+      await CommunicationLog.countDocuments({
+        campaignId,
+        status: "CLICKED",
+      });
+
+    response.status(200).json({
+      campaignId,
+      total,
+      delivered,
+      failed,
+      opened,
+      read,
+      clicked,
+    });
+  } catch (error) {
+    console.error(error);
+
+    response.status(500).json({
+      message: "Internal server error",
+    });
+  }
+},
+
+getLogs: async (request, response) => {
+  try {
+    const { campaignId } = request.params;
+
+    const logs =
+      await CommunicationLog.find({
+        campaignId,
+      })
+        .populate("customerId", "name email")
+        .sort({ createdAt: -1 });
+
+    response.status(200).json(logs);
+  } catch (error) {
+    console.error(error);
+
+    response.status(500).json({
+      message: "Internal server error",
+    });
+  }
+},
 };
 
 module.exports = campaignController;

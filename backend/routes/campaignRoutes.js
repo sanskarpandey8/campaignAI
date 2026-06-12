@@ -17,6 +17,16 @@ router.get(
 );
 
 router.get(
+  "/:campaignId/stats",
+  campaignController.getStats
+);
+
+router.get(
+  "/:campaignId/logs",
+  campaignController.getLogs
+);
+
+router.get(
   "/:campaignId",
   campaignController.getById
 );
