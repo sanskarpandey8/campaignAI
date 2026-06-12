@@ -1,3 +1,9 @@
+require("dotenv").config();
+
+const aiRoutes = require(
+  "./routes/aiRoutes"
+);
+
 const statsRoutes = require(
   "./routes/statsRoutes"
 );
@@ -11,7 +17,7 @@ const campaignRoutes = require(
   "./routes/campaignRoutes"
 );
 
-require("dotenv").config();
+
 
 const express = require("express");
 const cors = require("cors");
@@ -47,6 +53,8 @@ app.use(
   "/api/stats",
   statsRoutes
 );
+
+app.use("/api/ai", aiRoutes);
 
 // Health Check Route
 app.get("/", (req, res) => {
