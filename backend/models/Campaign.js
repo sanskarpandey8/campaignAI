@@ -30,20 +30,22 @@ const campaignSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: [
-        "DRAFT",
-        "PROCESSING",
-        "COMPLETED",
-      ],
+      enum: ["DRAFT", "PROCESSING", "COMPLETED"],
       default: "DRAFT",
+    },
+
+    scheduledAt: {
+      type: Date,
+    },
+
+    isScheduled: {
+      type: Boolean,
+      default: false,
     },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-module.exports = mongoose.model(
-  "Campaign",
-  campaignSchema
-);
+module.exports = mongoose.model("Campaign", campaignSchema);
