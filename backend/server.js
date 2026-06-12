@@ -1,3 +1,8 @@
+const receiptRoutes = require(
+  "./routes/receiptRoutes"
+);
+
+
 const campaignRoutes = require(
   "./routes/campaignRoutes"
 );
@@ -29,6 +34,10 @@ app.use(
   campaignRoutes
 );
 
+app.use(
+  "/api/receipts",
+  receiptRoutes
+);
 
 // Health Check Route
 app.get("/", (req, res) => {
