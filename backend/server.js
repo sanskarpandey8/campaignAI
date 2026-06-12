@@ -4,26 +4,34 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 
+const customerRoutes = require("./routes/customerRoutes");
+
 const app = express();
 
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-mongoose
-  .connect(process.env.MONGODB_URI)
-  .then(() => {
-    console.log("MongoDB Connected");
-  })
-  .catch((error) => {
-    console.error("MongoDB Error:", error);
-  });
+// Routes
+app.use("/api/customers", customerRoutes);
 
+// Health Check Route
 app.get("/", (req, res) => {
-  res.send("CampaignGPT Backend Running");
+  res.send("CampaignGPT Backend Running 🚀");
 });
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// Database Connection
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then(() => {
+    console.log("MongoDB Connected ✅");
+
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error("MongoDB Error:", error);
+  });
