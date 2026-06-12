@@ -1,3 +1,7 @@
+const statsRoutes = require(
+  "./routes/statsRoutes"
+);
+
 const receiptRoutes = require(
   "./routes/receiptRoutes"
 );
@@ -37,6 +41,11 @@ app.use(
 app.use(
   "/api/receipts",
   receiptRoutes
+);
+
+app.use(
+  "/api/stats",
+  statsRoutes
 );
 
 // Health Check Route
