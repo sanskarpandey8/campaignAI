@@ -17,17 +17,44 @@ const campaignController = {
       // Dynamic audience segmentation
       const query = {};
 
-      if (rules.totalSpent) {
-        query.totalSpent = {
-          $gte: rules.totalSpent,
-        };
-      }
+if (rules.totalSpent) {
+  query.totalSpent = {
+    $gte: rules.totalSpent,
+  };
+}
 
-      if (rules.totalOrders) {
-        query.totalOrders = {
-          $gte: rules.totalOrders,
-        };
-      }
+if (rules.totalOrders) {
+  query.totalOrders = {
+    $gte: rules.totalOrders,
+  };
+}
+
+if (rules.city) {
+  query.city = rules.city;
+}
+
+if (rules.preferredChannel) {
+  query.preferredChannel =
+    rules.preferredChannel;
+}
+
+if (rules.tags) {
+  query.tags = {
+    $in: rules.tags,
+  };
+}
+
+if (rules.lastOrderDays) {
+  const date = new Date();
+
+  date.setDate(
+    date.getDate() - rules.lastOrderDays
+  );
+
+  query.lastOrderDate = {
+    $gte: date,
+  };
+}
 
       const customers =
         await Customer.find(query);
