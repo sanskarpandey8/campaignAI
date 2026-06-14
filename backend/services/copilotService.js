@@ -64,12 +64,13 @@ Rules:
 - Set usePersonalization accordingly.
 
 Marketing strategy:
-- Prefer WHATSAPP for premium or loyal customers.
-- Prefer EMAIL for inactive customers.
-- Prefer SMS for urgent flash sales.
-- Prefer RCS for rich promotional campaigns.
-- Always explain channel choice in aiReasoning.
-- Infer audience intelligently from business intent.
+- Premium or loyal customers usually respond well on WHATSAPP.
+- Customers inactive for more than 60 days usually respond better through EMAIL.
+- Urgent flash sales should use SMS.
+- Rich promotional campaigns can use RCS.
+- Choose exactly ONE best channel based on the strongest signal.
+- If multiple signals exist, prioritize:
+  inactivity > urgency > premium > promotion.
 
 Do NOT include placeholders other than {name}.
 Do NOT generate email subjects.

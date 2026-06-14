@@ -1,5 +1,7 @@
 const summaryService = require("../services/summaryService");
-
+const Campaign = require(
+  "../models/Campaign"
+);
 const campaignDao = require("../dao/campaignDao");
 const Customer = require("../models/Customer");
 const CommunicationLog = require("../models/CommunicationLog");
@@ -222,19 +224,26 @@ const campaignController = {
     }
   },
 
-  getAll: async (request, response) => {
-    try {
-      const campaigns = await campaignDao.getAllCampaigns();
+getAll: async (req, res) => {
+  try {
+    const campaigns =
+      await Campaign.find()
+        .sort({
+          createdAt: -1,
+        });
 
-      response.status(200).json(campaigns);
-    } catch (error) {
-      console.error(error);
+    res.status(200).json(
+      campaigns
+    );
+  } catch (error) {
+    console.error(error);
 
-      response.status(500).json({
-        message: "Internal server error",
-      });
-    }
-  },
+    res.status(500).json({
+      message:
+        "Failed to fetch campaigns",
+    });
+  }
+},
 
   getById: async (request, response) => {
     try {
