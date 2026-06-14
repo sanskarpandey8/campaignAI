@@ -4,53 +4,55 @@ import {
   Route,
 } from "react-router-dom";
 
+import Dashboard from "./pages/Dashboard";
+import Campaigns from "./pages/Campaigns";
+import Copilot from "./pages/Copilot";
+import CreateCampaign from "./pages/CreateCampaign";
+
+import CampaignDetails from "./pages/CampaignDetails";
+
 import Navbar from "./components/Navbar";
 
-import Dashboard from "./pages/Dashboard";
-import Customers from "./pages/Customers";
-import Orders from "./pages/Orders";
-import Campaigns from "./pages/Campaigns";
-import CreateCampaign from "./pages/CreateCampaign";
-import Analytics from "./pages/Analytics";
 
 function App() {
   return (
     <BrowserRouter>
-      <Navbar />
+      <div className="min-h-screen bg-slate-50">
+        <Navbar />
 
-      <Routes>
-        <Route
-          path="/"
-          element={<Dashboard />}
-        />
+        <div className="flex">
+        
 
-        <Route
-          path="/customers"
-          element={<Customers />}
-        />
+          <main className="p-8">
+            <Routes>
+              <Route
+                path="/"
+                element={<Dashboard />}
+              />
 
-        <Route
-          path="/orders"
-          element={<Orders />}
-        />
+              <Route
+                path="/campaigns"
+                element={<Campaigns />}
+              />
 
-        <Route
-          path="/campaigns"
-          element={<Campaigns />}
-        />
+              <Route
+                path="/copilot"
+                element={<Copilot />}
+              />
 
-        <Route
-          path="/create-campaign"
-          element={
-            <CreateCampaign />
-          }
-        />
+              <Route
+                path="/create-campaign"
+                element={<CreateCampaign />}
+              />
 
-        <Route
-          path="/analytics"
-          element={<Analytics />}
-        />
-      </Routes>
+              <Route
+  path="/campaigns/:id"
+  element={<CampaignDetails />}
+/>
+            </Routes>
+          </main>
+        </div>
+      </div>
     </BrowserRouter>
   );
 }

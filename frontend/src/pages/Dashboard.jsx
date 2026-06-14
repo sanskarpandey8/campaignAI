@@ -1,11 +1,18 @@
 import { useEffect, useState } from "react";
-import api from "../services/api";
 
-function Dashboard() {
+import { getDashboardStats } from "../services/api";
+
+import StatCard from "../components/StatCard";
+
+import SubjectGenerator from
+  "../components/SubjectGenerator";
+
+const Dashboard = () => {
   const [stats, setStats] = useState({
-    customers: 0,
-    orders: 0,
     campaigns: 0,
+    customers: 0,
+    deliveryRate: 0,
+    ctr: 0,
   });
 
   useEffect(() => {
@@ -14,68 +21,68 @@ function Dashboard() {
 
   const fetchStats = async () => {
     try {
-      const [
-        customersRes,
-        ordersRes,
-        campaignsRes,
-      ] = await Promise.all([
-        api.get("/customers"),
-        api.get("/orders"),
-        api.get("/campaigns"),
-      ]);
+      const response =
+        await getDashboardStats();
 
-      setStats({
-        customers:
-          customersRes.data.length,
-        orders:
-          ordersRes.data.length,
-        campaigns:
-          campaignsRes.data.length,
-      });
+      setStats(response.data);
     } catch (error) {
       console.error(error);
     }
   };
 
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-8">
-        CampaignAI Dashboard
-      </h1>
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-5xl font-bold">
+          AI-Powered CRM
+        </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-slate-800 p-6 rounded-xl shadow-lg">
-          <h2 className="text-xl text-slate-300">
-            Customers
-          </h2>
-
-          <p className="text-4xl font-bold mt-2">
-            {stats.customers}
-          </p>
-        </div>
-
-        <div className="bg-slate-800 p-6 rounded-xl shadow-lg">
-          <h2 className="text-xl text-slate-300">
-            Orders
-          </h2>
-
-          <p className="text-4xl font-bold mt-2">
-            {stats.orders}
-          </p>
-        </div>
-
-        <div className="bg-slate-800 p-6 rounded-xl shadow-lg">
-          <h2 className="text-xl text-slate-300">
-            Campaigns
-          </h2>
-
-          <p className="text-4xl font-bold mt-2">
-            {stats.campaigns}
-          </p>
-        </div>
+        <p className="text-gray-500 mt-3 text-lg">
+          Manage campaigns and customer engagement.
+        </p>
       </div>
+
+      <div className="grid md:grid-cols-4 gap-6">
+        <StatCard
+          title="Campaigns"
+          value={stats.campaigns}
+          color="text-blue-600"
+        />
+
+        <StatCard
+          title="Customers"
+          value={stats.customers}
+          color="text-green-500"
+        />
+
+        <StatCard
+          title="Delivery Rate"
+          value={`${stats.deliveryRate}%`}
+          color="text-purple-500"
+        />
+
+        <StatCard
+          title="CTR"
+          value={`${stats.ctr}%`}
+          color="text-orange-500"
+        />
+      </div>
+
+      <div className="bg-white p-8 rounded-3xl border shadow-sm">
+        <h2 className="text-2xl font-semibold">
+          Welcome to CampaignAI
+        </h2>
+
+        <p className="text-gray-500 mt-3">
+          AI-powered customer relationship management
+          with smart segmentation, campaigns and
+          analytics.
+        </p>
+      </div>
+
+      <SubjectGenerator />
     </div>
   );
-}
+};
 
 export default Dashboard;
