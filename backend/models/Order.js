@@ -28,8 +28,8 @@ const orderSchema = new mongoose.Schema(
 
     channel: {
       type: String,
-      enum: ["ONLINE", "STORE"],
-      default: "ONLINE",
+      enum: ["EMAIL", "SMS", "WHATSAPP", "RCS"],
+      default: "EMAIL",
     },
 
     items: {
@@ -44,7 +44,7 @@ const orderSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 module.exports = mongoose.model("Order", orderSchema);

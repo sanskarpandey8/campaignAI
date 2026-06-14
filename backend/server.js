@@ -1,5 +1,13 @@
 require("dotenv").config();
 
+const dashboardRoutes = require(
+  "./routes/dashboardRoutes"
+);
+
+const copilotRoutes = require(
+  "./routes/copilotRoutes"
+);
+
 const aiRoutes = require(
   "./routes/aiRoutes"
 );
@@ -17,7 +25,9 @@ const campaignRoutes = require(
   "./routes/campaignRoutes"
 );
 
-
+const subjectRoutes = require(
+  "./routes/subjectRoutes"
+);
 
 const express = require("express");
 const cors = require("cors");
@@ -40,6 +50,11 @@ app.use("/api/customers", customerRoutes);
 app.use("/api/orders", orderRoutes);
 
 app.use(
+  "/api/dashboard",
+  dashboardRoutes
+);
+
+app.use(
   "/api/campaigns",
   campaignRoutes
 );
@@ -55,6 +70,17 @@ app.use(
 );
 
 app.use("/api/ai", aiRoutes);
+
+app.use(
+  "/api/copilot",
+  copilotRoutes
+);
+
+app.use(
+  "/api/subjects",
+  subjectRoutes
+);
+
 
 // Health Check Route
 app.get("/", (req, res) => {

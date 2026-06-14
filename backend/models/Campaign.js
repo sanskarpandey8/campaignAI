@@ -42,6 +42,11 @@ const campaignSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+
+    recommendedChannel: {
+      type: String,
+      enum: ["EMAIL", "SMS", "WHATSAPP", "RCS"],
+    },
   },
   {
     timestamps: true,

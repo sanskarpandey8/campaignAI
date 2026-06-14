@@ -27,6 +27,11 @@ router.get(
 );
 
 router.get(
+  "/:campaignId/ai-summary",
+  campaignController.getAISummary
+);
+
+router.get(
   "/:campaignId",
   campaignController.getById
 );
