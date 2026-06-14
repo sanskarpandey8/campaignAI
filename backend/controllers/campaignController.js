@@ -29,40 +29,86 @@ const campaignController = {
       // Dynamic audience segmentation
       const query = {};
 
-      if (rules.totalSpent) {
-        query.totalSpent = {
-          $gte: rules.totalSpent,
+      // Total Spent Range
+      if (rules.totalSpentMin || rules.totalSpentMax) {
+        query.totalSpent = {};
+
+        if (rules.totalSpentMin) {
+          query.totalSpent.$gte = rules.totalSpentMin;
+        }
+
+        if (rules.totalSpentMax) {
+          query.totalSpent.$lte = rules.totalSpentMax;
+        }
+      }
+
+      // Total Orders Range
+      if (rules.totalOrdersMin || rules.totalOrdersMax) {
+        query.totalOrders = {};
+
+        if (rules.totalOrdersMin) {
+          query.totalOrders.$gte = rules.totalOrdersMin;
+        }
+
+        if (rules.totalOrdersMax) {
+          query.totalOrders.$lte = rules.totalOrdersMax;
+        }
+      }
+
+      // Age Range
+      if (rules.ageMin || rules.ageMax) {
+        query.age = {};
+
+        if (rules.ageMin) {
+          query.age.$gte = rules.ageMin;
+        }
+
+        if (rules.ageMax) {
+          query.age.$lte = rules.ageMax;
+        }
+      }
+
+      // Multiple Cities
+      if (rules.cities && rules.cities.length > 0) {
+        query.city = {
+          $in: rules.cities,
         };
       }
 
-      if (rules.totalOrders) {
-        query.totalOrders = {
-          $gte: rules.totalOrders,
+      // Multiple Channels
+      if (rules.channels && rules.channels.length > 0) {
+        query.preferredChannel = {
+          $in: rules.channels,
         };
       }
 
-      if (rules.city) {
-        query.city = rules.city;
-      }
-
-      if (rules.preferredChannel) {
-        query.preferredChannel = rules.preferredChannel;
-      }
-
-      if (rules.tags) {
+      // Tags
+      if (rules.tags && rules.tags.length > 0) {
         query.tags = {
           $in: rules.tags,
         };
       }
 
+      // Gender
+      if (rules.gender) {
+        query.gender = rules.gender;
+      }
+
+      // Last Order Date
       if (rules.lastOrderDays) {
         const date = new Date();
 
         date.setDate(date.getDate() - rules.lastOrderDays);
 
-        query.lastOrderDate = {
-          $gte: date,
-        };
+        query.lastOrderDate = {};
+
+        if (rules.lastOrderOperator === "BEFORE") {
+          // Customers who DID NOT buy in last N days
+          query.lastOrderDate.$lte = date;
+        } else {
+          // Customers who bought within last N days
+          query.lastOrderDate.$gte = date;
+        }
       }
 
       const customers = await Customer.find(query);
@@ -87,10 +133,9 @@ const campaignController = {
 
       // Send campaign to all matching customers
       for (const customer of customers) {
-        const personalizedMessage = finalMessage.replace(
-          "{name}",
-          customer.name,
-        );
+        const personalizedMessage = finalMessage.includes("{name}")
+          ? finalMessage.replace("{name}", customer.name)
+          : finalMessage;
 
         const communication = await CommunicationLog.create({
           campaignId: campaign._id,

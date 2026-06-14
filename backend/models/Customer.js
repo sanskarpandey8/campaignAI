@@ -50,10 +50,24 @@ const customerSchema = new mongoose.Schema(
     lastOrderDate: {
       type: Date,
     },
+
+    gender: {
+      type: String,
+      enum: ["MALE", "FEMALE"],
+    },
+
+    age: {
+      type: Number,
+    },
+
+    lifetimeValue: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 module.exports = mongoose.model("Customer", customerSchema);
